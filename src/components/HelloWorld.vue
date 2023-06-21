@@ -1,9 +1,18 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 
 defineProps<{ msg: string }>();
+console.log(window.versions.node());
 
+const pingFun = async () => {
+  const response = await window.versions.ping();
+  console.log(response);
+};
 const count = ref(0);
+
+onMounted(() => {
+  pingFun();
+});
 </script>
 
 <template>

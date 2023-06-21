@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc && vite build",
-    "electron:build": "vue-tsc && vite build && electron-builder",
+    "build-mac": "vue-tsc && vite build && electron-builder --mac",
+    "build-win64": "vue-tsc && vite build && electron-builder --win --x64",
+    "build-win": "vue-tsc && vite build && electron-builder --win --ia32",
     "preview": "vite preview"
   },
   "build": {
@@ -15,11 +17,12 @@
     "asar": true,
     "copyright": "Copyright © 2022 electron",
     "directories": {
-      "output": "release/"
+      "output": "electron-build/"
     },
     "files": [
       "dist-electron",
-      "dist"
+      "dist",
+      "electron"
     ],
     "mac": {
       "artifactName": "${productName}_${version}.${ext}",

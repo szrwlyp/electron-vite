@@ -4,12 +4,12 @@ const path = require("path");
 let win;
 const createWindow = () => {
   win = new electron.BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1200,
+    height: 800,
+    frame: false,
+    // 不要自带的窗口
     webPreferences: {
-      devTools: true,
-      contextIsolation: false,
-      nodeIntegration: true
+      preload: path.join(__dirname, "../electron/preload/preload.ts")
     }
   });
   if (process.env.NODE_ENV != "development") {
@@ -20,4 +20,15 @@ const createWindow = () => {
   let contents = win.webContents;
   contents.openDevTools();
 };
-electron.app.whenReady().then(createWindow);
+electron.app.whenReady().then(() => {
+  electron.ipcMain.handle("ping", () => "ping");
+  createWindow();
+  electron.app.on("activate", () => {
+    if (electron.BrowserWindow.getAllWindows().length === 0)
+      createWindow();
+  });
+});
+electron.app.on("window-all-closed", () => {
+  if (process.platform !== "darwin")
+    electron.app.quit();
+});

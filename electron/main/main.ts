@@ -1,16 +1,15 @@
-import { app, BrowserWindow } from "electron";
+import { app, BrowserWindow, ipcMain } from "electron";
 import path from "path";
 
 let win: BrowserWindow | null;
 
 const createWindow = () => {
   win = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1200,
+    height: 800,
+    frame: false, // 不要自带的窗口
     webPreferences: {
-      devTools: true,
-      contextIsolation: false,
-      nodeIntegration: true,
+      preload: path.join(__dirname, "../electron/preload/preload.ts"),
     },
   });
   if (process.env.NODE_ENV != "development") {
@@ -23,4 +22,14 @@ const createWindow = () => {
   contents.openDevTools();
 };
 
-app.whenReady().then(createWindow);
+app.whenReady().then(() => {
+  ipcMain.handle("ping", () => "ping");
+
+  createWindow();
+  app.on("activate", () => {
+    if (BrowserWindow.getAllWindows().length === 0) createWindow();
+  });
+});
+app.on("window-all-closed", () => {
+  if (process.platform !== "darwin") app.quit();
+});
