@@ -9,39 +9,75 @@ const pingFun = async () => {
   console.log(response);
 };
 const count = ref(0);
-
+const message = ref("");
+const start = ref("");
 onMounted(() => {
   pingFun();
+  const StartScore = (rate: number) => "★★★★★☆☆☆☆☆".slice(5 - rate, 10 - rate);
+  start.value = StartScore(0);
 });
+
+const setTitle = () => {
+  window.versions.setTitle("你好");
+};
+
+const inputValue = ref("");
+const setTitleInput = () => {
+  console.log(inputValue.value);
+  window.versions.setTitle(inputValue.value);
+};
+
+const dialog = () => {
+  window.versions.openDialog();
+};
+
+const eventSourceFun = () => {
+  const sse = new EventSource("/api/api/sse");
+
+  console.log(sse);
+  sse.addEventListener("open", (e) => {
+    console.log(e.target);
+  });
+  //对应后端nodejs自定义的事件名lol
+  sse.addEventListener("lol", (e) => {
+    message.value = message.value + e.data;
+  });
+  sse.addEventListener("message", (e) => {
+    console.log(e.data);
+  });
+};
 </script>
 
 <template>
-  <h1>{{ msg }}</h1>
-  aaa
-  <div class="card">
-    <button type="button" @click="count++">count is {{ count }}</button>
-    <p>
-      Edit
-      <code>components/HelloWorld.vue</code> to test HMR
-    </p>
-  </div>
+  <div @click="setTitle">点击</div>
+  <input type="text" v-model="inputValue" @input="setTitleInput" />
+  <h1>{{ count }}</h1>
+  <div @click="dialog">请选择</div>
+  <div @click="eventSourceFun">GPT</div>
+  <div style="width: 200px; height: auto">{{ message }}</div>
+  <div>{{ start }}</div>
 
-  <p>
-    Check out
-    <a href="https://vuejs.org/guide/quick-start.html#local" target="_blank"
-      >create-vue</a
-    >, the official Vue + Vite starter
-  </p>
-  <p>
-    Install
-    <a href="https://github.com/vuejs/language-tools" target="_blank">Volar</a>
-    in your IDE for a better DX
-  </p>
-  <p class="read-the-docs">Click on the Vite and Vue logos to learn more</p>
+  <ul class="nav">
+    <li>aaaa</li>
+    <li>aaaa</li>
+    <li>aaaa</li>
+    <li>aaaa</li>
+    <li>aaaa</li>
+  </ul>
 </template>
 
 <style scoped>
 .read-the-docs {
   color: #888;
+}
+/* .nav li {
+  border-right: 1px solid #666;
+}
+.nav li:last-child {
+  border-right: none;
+} */
+.nav li:not(:last-child) {
+  margin-bottom: 10px;
+  border-bottom: 1px solid #ccc;
 }
 </style>

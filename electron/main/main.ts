@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from "electron";
+import { app, BrowserWindow, ipcMain, dialog } from "electron";
 import path from "path";
 
 let win: BrowserWindow | null;
@@ -7,7 +7,7 @@ const createWindow = () => {
   win = new BrowserWindow({
     width: 1200,
     height: 800,
-    frame: false, // 不要自带的窗口
+    // frame: false, // 不要自带的窗口
     webPreferences: {
       preload: path.join(__dirname, "../electron/preload/preload.ts"),
     },
@@ -25,7 +25,23 @@ const createWindow = () => {
 app.whenReady().then(() => {
   ipcMain.handle("ping", () => "ping");
 
+  ipcMain.on("setTitle", (event, title) => {
+    const webContents = event.sender;
+    const win = BrowserWindow.fromWebContents(webContents);
+    win?.setTitle(title);
+  });
+
+  ipcMain.handle("openDialog", async () => {
+    console.log("打开选项框");
+    console.log(
+      await dialog.showOpenDialog({
+        title: "选择文件",
+        properties: ["openFile", "multiSelections"],
+      })
+    );
+  });
   createWindow();
+
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });

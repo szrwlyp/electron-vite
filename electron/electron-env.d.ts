@@ -1,12 +1,10 @@
-interface IVersions {
-  node: any;
-  chrome: any;
-  electron: any;
-  ping: any;
-}
-
-export interface IElectronAttribute {
-  versions: IVersions;
+export interface IVersions {
+  node: () => Promise<void>;
+  chrome: () => Promise<void>;
+  electron: () => Promise<void>;
+  ping: () => Promise<void>;
+  setTitle: (title) => Promise<void>;
+  openDialog: () => Promise<void>;
 }
 
 declare global {

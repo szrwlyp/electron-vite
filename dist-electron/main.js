@@ -6,8 +6,7 @@ const createWindow = () => {
   win = new electron.BrowserWindow({
     width: 1200,
     height: 800,
-    frame: false,
-    // 不要自带的窗口
+    // frame: false, // 不要自带的窗口
     webPreferences: {
       preload: path.join(__dirname, "../electron/preload/preload.ts")
     }
@@ -22,6 +21,20 @@ const createWindow = () => {
 };
 electron.app.whenReady().then(() => {
   electron.ipcMain.handle("ping", () => "ping");
+  electron.ipcMain.on("setTitle", (event, title) => {
+    const webContents = event.sender;
+    const win2 = electron.BrowserWindow.fromWebContents(webContents);
+    win2 == null ? void 0 : win2.setTitle(title);
+  });
+  electron.ipcMain.handle("openDialog", async () => {
+    console.log("打开选项框");
+    console.log(
+      await electron.dialog.showOpenDialog({
+        title: "选择文件",
+        properties: ["openFile", "multiSelections"]
+      })
+    );
+  });
   createWindow();
   electron.app.on("activate", () => {
     if (electron.BrowserWindow.getAllWindows().length === 0)
